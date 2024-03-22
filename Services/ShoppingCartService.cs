@@ -24,18 +24,9 @@ namespace ShoppingCart.Service
             {
                 product.Price = _productRepository.GetProductByProductName(product.Title).Result?.Price;
 
-                var dictionaryKey = cartProducts.Keys.Where(x => x.Title != null && x.Title.Equals(product.Title)).FirstOrDefault<Product>();
-                if (dictionaryKey != null )
+                if (cartProducts.ContainsKey(product))
                 {
-                    if(dictionaryKey.Price != product.Price)
-                    {
-                        cartProducts.Remove(dictionaryKey);
-                        cartProducts.Add(product, qty);
-                    }
-                    else
-                    {
-                        cartProducts[product] = qty;
-                    }
+                    cartProducts[product] = qty;
                 }
                 else
                 {
@@ -68,7 +59,10 @@ namespace ShoppingCart.Service
         {
             if(cartProducts!= null && cartProducts.ContainsKey(product))
             {
-                cartProducts[product] = cartProducts[product] - 1;
+                if (cartProducts[product] == 1)
+                    cartProducts.Remove(product);
+                else
+                   cartProducts[product] = cartProducts[product] - 1;
                 return true;
             }
             return false;
